@@ -1,66 +1,120 @@
 import manim as mn
 import numpy as np
 
+mn.config.disable_caching = True
+
 
 class CreatePyramid(mn.Scene):
     def create_triangle(self, width, height, color=mn.BLUE):
         return mn.Polygon(
+            [-width / 2, 0, 0],
             [width / 2, 0, 0],
             [0, height, 0],
-            [-width / 2, 0, 0],
+            [0, height, 0],
             fill_opacity=0.5,
             fill_color=color)
 
     def create_trapezoid(self, width, height, color=mn.BLUE):
         return mn.Polygon(
-            [width / 2, 0, 0],
-            [-width / 2, 0, 0],
-            [-width / 2 - height / np.sqrt(3), -height, 0],
-            [width / 2 + height / np.sqrt(3), -height, 0],
+            [-(width / 2 + height / np.sqrt(3)), 0, 0],
+            [width / 2 + height / np.sqrt(3), 0, 0],
+            [width / 2, height, 0],
+            [-width / 2, height, 0],
             fill_opacity=0.5,
             fill_color=color)
 
-    def create_pyramid(self, level_count=3):
-        tip = self.create_triangle(2, np.sqrt(3))
+    def create_custom_pyramid(
+            self,
+            size: int,
+            labels: [str] = None,
+            colors: [mn.color] = None):
+        group = []
+        for i in range(size):
+            color = colors[i] if colors else mn.BLUE
+            label = labels[i] if labels else ""
 
-        levels = []
-        labels = []
-        for i in range(level_count - 1):
-            level = self.create_trapezoid(2 * (i + 1), np.sqrt(3))
-
+            polygon: mn.Mobject
             if i == 0:
-                level.next_to(tip, mn.DOWN, buff=0)
+                polygon = self.create_triangle(2, np.sqrt(3), color=color)
             else:
-                level.next_to(levels[i - 1], mn.DOWN, buff=0)
+                polygon = self.create_trapezoid(
+                    2 * i, np.sqrt(3), color=color)
+                polygon.next_to(group[i - 1][0], mn.DOWN, buff=0)
 
-            levels.append(level)
+            text = mn.Text(label)
+            text.font_size = 24
+            text.move_to(polygon.get_center())
 
-            label = mn.Text(f"{i + 1}", font="Arial", stroke_width=0.5)
-            label.next_to(level, mn.LEFT, buff=0)
-            labels.append(label)
+            group.append(mn.VGroup(polygon, text))
 
-        group = mn.VGroup(tip, *levels, *labels)
-        group.width = 4
-        return group
+        return mn.VGroup(*group)
 
     def construct(self):
-        pyramid1 = self.create_pyramid(7)
-        pyramid1.width = 5
-        pyramid1.move_to(mn.ORIGIN)
-        pyramid1.shift(mn.LEFT * 3.5)
+        # ========== Show pyramid ==========
 
-        pyramid2 = self.create_pyramid(7)
-        pyramid2.width = 5
-        pyramid2.move_to(mn.ORIGIN)
-        pyramid2.shift(mn.RIGHT * 3.5)
+        pyramid = self.create_custom_pyramid(
+            3,
+            ['Meat & Dairy Products', 'Fruits & Vegetables', 'Grain Products'],
+            [mn.RED, mn.GREEN, mn.BLUE])
+        pyramid.move_to(mn.ORIGIN)
 
-        # animations  = []
-        # for i in range(len(pyramid)):
-        #     animations.append(mn.FadeIn(pyramid[i]))
+        animations = []
+        for i in range(len(pyramid)):
+            animations.append(mn.FadeIn(pyramid[i]))
 
-        # self.play(mn.AnimationGroup(*animations, lag_ratio=0.5))
-        # self.wait(1)
+        # ========== Show title and subtitle ==========
 
-        self.add(pyramid1)
-        self.add(pyramid2)
+        title = mn.Text("The new food pyramid")
+        title.to_edge(mn.UP)
+        title.shift(mn.UP * 0.5)
 
+        subtitle = mn.Text("1970s")
+        subtitle.to_edge(mn.DOWN)
+        subtitle.shift(mn.DOWN * 0.5)
+
+        self.play(
+            mn.AnimationGroup(mn.FadeIn(title), *animations,
+                              mn.FadeIn(subtitle), lag_ratio=0.5)
+        )
+        self.wait(3)
+
+        # ========== Start transform ==========
+
+        # 1 -> 2
+        # 2 -> 3
+        # 3 -> 1
+
+        level_1, level_2, level_3 = pyramid
+
+        self.play(mn.ApplyMethod(level_1.shift, mn.UP * 0.25),
+                  mn.ApplyMethod(level_3.shift, mn.DOWN * 0.25))
+
+        position_1 = level_1.get_center()
+        position_2 = level_2.get_center()
+        position_3 = level_3.get_center()
+
+        new_polygon_1 = level_2[0].copy()
+        new_polygon_1.move_to(position_1)
+
+        new_polygon_2 = level_3[0].copy()
+        new_polygon_2.move_to(position_2)
+
+        new_polygon_3 = level_1[0].copy()
+        new_polygon_3.move_to(position_3)
+
+        self.play(mn.Transform(level_1[0], new_polygon_1, lag_ratio=1),
+                  mn.Transform(level_2[0], new_polygon_2, lag_ratio=1),
+                  mn.Transform(level_3[0], new_polygon_3, lag_ratio=1),
+                  mn.FadeOut(subtitle))
+
+        new_subtitle = mn.Text("2010s")
+        new_subtitle.move_to(subtitle.get_center())
+
+        self.play(mn.ApplyMethod(level_1.move_to, position_2),
+                  mn.ApplyMethod(level_2.move_to, position_3),
+                  mn.ApplyMethod(level_3.move_to, position_1),
+                  mn.FadeIn(new_subtitle))
+
+        self.play(mn.ApplyMethod(level_2.shift, mn.UP * 0.25),
+                  mn.ApplyMethod(level_3.shift, mn.DOWN * 0.25))
+        self.wait(3)
