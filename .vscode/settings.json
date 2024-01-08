@@ -1,4 +1,5 @@
 {
   "python.analysis.autoImportCompletions": true,
-  "python.languageServer": "Default"
+  "python.languageServer": "Default",
+  "cSpell.words": ["Mobject", "vgroup"]
 }

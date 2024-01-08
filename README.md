@@ -1,1 +1,1 @@
-# mainm-tutorial
+# Manim Tutorial
