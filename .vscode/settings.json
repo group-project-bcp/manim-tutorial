@@ -1,5 +1,5 @@
 {
   "python.analysis.autoImportCompletions": true,
   "python.languageServer": "Default",
-  "cSpell.words": ["Mobject", "vgroup"]
+  "cSpell.words": ["bezier", "Mobject", "vgroup"]
 }
