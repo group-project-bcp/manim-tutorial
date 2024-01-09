@@ -1,7 +1,6 @@
 import manim as mn
-import numpy as np
 
-# mn.config.disable_caching = True
+mn.config.disable_caching = True
 
 
 class CreateDunningKruger(mn.Scene):
@@ -11,6 +10,8 @@ class CreateDunningKruger(mn.Scene):
 
         title = mn.Text("Dunning-Kruger Effect", font_size=24)
         title.to_edge(mn.UP)
+
+        # self.play(mn.FadeIn(title))
         self.add(title)
 
         # ========== Axes ==========
@@ -21,6 +22,8 @@ class CreateDunningKruger(mn.Scene):
             tips=True,
             axis_config={"include_numbers": False, "include_ticks": False},
         )
+
+        # self.play(mn.Create(axes))
         self.add(axes)
 
         # ========== X labels ==========
@@ -31,7 +34,6 @@ class CreateDunningKruger(mn.Scene):
             direction=mn.DOWN,
             aligned_edge=mn.LEFT
         )
-        self.add(x_start_label)
 
         x_mid_label = mn.MathTex(
             "Competence", font_size=36)
@@ -40,14 +42,19 @@ class CreateDunningKruger(mn.Scene):
             direction=mn.DOWN,
             aligned_edge=mn.ORIGIN,
         )
-        self.add(x_mid_label)
 
         x_end_label = mn.MathTex("Guru", font_size=24)
         x_end_label.next_to(
             axes.x_axis.get_end(),
             direction=mn.DOWN,
             aligned_edge=mn.RIGHT)
-        self.add(x_end_label)
+
+        # self.play(
+        #     mn.FadeIn(x_start_label),
+        #     mn.FadeIn(x_mid_label),
+        #     mn.FadeIn(x_end_label)
+        # )
+        self.add(x_start_label, x_mid_label, x_end_label)
 
         # ========== Y labels ==========
 
@@ -57,7 +64,6 @@ class CreateDunningKruger(mn.Scene):
             direction=mn.LEFT,
             aligned_edge=mn.DOWN,
         )
-        self.add(y_start_label)
 
         y_mid_label = mn.MathTex(
             "Confidence", font_size=36
@@ -67,14 +73,19 @@ class CreateDunningKruger(mn.Scene):
             direction=mn.LEFT,
             aligned_edge=mn.ORIGIN,
         )
-        self.add(y_mid_label)
 
         y_end_label = mn.MathTex("High", font_size=24)
         y_end_label.next_to(
             axes.y_axis.get_end(),
             direction=mn.LEFT,
             aligned_edge=mn.UP)
-        self.add(y_end_label)
+
+        # self.play(
+        #     mn.FadeIn(y_start_label),
+        #     mn.FadeIn(y_mid_label),
+        #     mn.FadeIn(y_end_label)
+        # )
+        self.add(y_start_label, y_mid_label, y_end_label)
 
         # ========== Line ==========
 
@@ -90,9 +101,13 @@ class CreateDunningKruger(mn.Scene):
 
         path = mn.VMobject()
         path.set_points_smoothly([axes.c2p(x, y) for x, y in points])
-        self.add(path)
 
         # self.play(mn.Create(path))
+        self.add(path)
+
+        # ========== Wait ==========
+
+        self.wait(5)
 
         # ========== Lines ==========
 
