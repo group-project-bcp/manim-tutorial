@@ -6,13 +6,17 @@ mn.config.disable_caching = True
 class CreateDunningKruger(mn.Scene):
     def construct(self):
 
+        # ========== Config ==========
+
+        mn.Text.set_default(font="Roboto", font_size=16)
+
         # ========== Title ==========
 
-        title = mn.Text("Dunning-Kruger Effect", font_size=24)
+        title = mn.Text("Dunning-Kruger Effect", font_size=36)
         title.to_edge(mn.UP)
 
-        # self.play(mn.FadeIn(title))
-        self.add(title)
+        self.play(mn.FadeIn(title))
+        # self.add(title)
 
         # ========== Axes ==========
 
@@ -23,8 +27,8 @@ class CreateDunningKruger(mn.Scene):
             axis_config={"include_numbers": False, "include_ticks": False},
         )
 
-        # self.play(mn.Create(axes))
-        self.add(axes)
+        self.play(mn.Create(axes))
+        # self.add(axes)
 
         # ========== X labels ==========
 
@@ -49,12 +53,12 @@ class CreateDunningKruger(mn.Scene):
             direction=mn.DOWN,
             aligned_edge=mn.RIGHT)
 
-        # self.play(
-        #     mn.FadeIn(x_start_label),
-        #     mn.FadeIn(x_mid_label),
-        #     mn.FadeIn(x_end_label)
-        # )
-        self.add(x_start_label, x_mid_label, x_end_label)
+        self.play(
+            mn.FadeIn(x_start_label),
+            mn.FadeIn(x_mid_label),
+            mn.FadeIn(x_end_label)
+        )
+        # self.add(x_start_label, x_mid_label, x_end_label)
 
         # ========== Y labels ==========
 
@@ -80,12 +84,12 @@ class CreateDunningKruger(mn.Scene):
             direction=mn.LEFT,
             aligned_edge=mn.UP)
 
-        # self.play(
-        #     mn.FadeIn(y_start_label),
-        #     mn.FadeIn(y_mid_label),
-        #     mn.FadeIn(y_end_label)
-        # )
-        self.add(y_start_label, y_mid_label, y_end_label)
+        self.play(
+            mn.FadeIn(y_start_label),
+            mn.FadeIn(y_mid_label),
+            mn.FadeIn(y_end_label)
+        )
+        # self.add(y_start_label, y_mid_label, y_end_label)
 
         # ========== Line ==========
 
@@ -100,14 +104,59 @@ class CreateDunningKruger(mn.Scene):
         ]
 
         path = mn.VMobject()
+        path.color = mn.BLUE
         path.set_points_smoothly([axes.c2p(x, y) for x, y in points])
 
-        # self.play(mn.Create(path))
-        self.add(path)
+        self.play(mn.Create(path))
+        # self.add(path)
+
+        # ========== Helper labels ==========
+
+        helper_label_1 = mn.Text("Peak of \"Mount Stupid\"")
+        helper_label_1.next_to(
+            axes.c2p(1, 8),
+            direction=mn.UP,
+            aligned_edge=mn.LEFT,
+        )
+
+        helper_label_2 = mn.Text("Valley of Despair")
+        helper_label_2.next_to(
+            axes.c2p(3, 1),
+            direction=mn.DOWN,
+            aligned_edge=mn.ORIGIN,
+        )
+
+        helper_label_3 = mn.Text("Slope of Enlightenment")
+        helper_label_3.next_to(
+            axes.c2p(6, 5),
+            direction=mn.DOWN,
+            aligned_edge=mn.LEFT,
+        )
+
+        helper_label_4 = mn.Text("Plateau of Sustainability")
+        helper_label_4.next_to(
+            axes.c2p(10, 8),
+            direction=mn.UP,
+            aligned_edge=mn.RIGHT,
+        )
+
+        helper_label_animations = [
+            mn.FadeIn(helper_label_1),
+            mn.FadeIn(helper_label_2),
+            mn.FadeIn(helper_label_3),
+            mn.FadeIn(helper_label_4),
+        ]
+
+        self.play(mn.AnimationGroup(*helper_label_animations, lag_ratio=0.5))
+        # self.add(
+        #     helper_label_1,
+        #     helper_label_2,
+        #     helper_label_3,
+        #     helper_label_4)
 
         # ========== Wait ==========
 
-        self.wait(5)
+        self.wait(3)
 
         # ========== Lines ==========
 
